@@ -1,0 +1,39 @@
+//Design Code
+module demux1x2(output out1,out2,input sel,in);
+  assign out1=in&(~sel);
+  assign out2=in&sel;
+endmodule
+
+module or_gate(output or_op,out2,input a,b);
+  wire o1,o2,o3,o4;
+  demux1x2 a1(o1,o2,b,1);
+  demux1x2 a2(o3,o4,a,o1);
+  demux1x2 a3(or_op,out2,o3,1);
+endmodule
+
+//Test Bench Code
+module tb();
+  wire or_op,out2;
+  reg a,b;
+  or_gate DUT(or_op,out2,a,b);
+  integer i;
+  initial
+    begin
+      for(i=0;i<4;i=i+1)
+        begin
+          {a,b}=i;
+          #10;
+        end
+    end
+  
+  initial
+    begin
+      $timeformat(-9,0,"ns",10);
+      $monitor("time=%0t,a=%b,b=%b,or_op=%b,out2=%b",$time,a,b,or_op,out2);
+    end
+  initial
+    begin
+      $dumpfile("test.vcd");
+      $dumpvars(1);
+    end
+endmodule
